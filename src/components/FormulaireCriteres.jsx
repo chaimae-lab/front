@@ -8,8 +8,6 @@ const FormulaireCriteres = () => {
     dateDepart: "",
     dateRetour: "",
     budget: "",
-<<<<<<< HEAD
-=======
     voyageurs: {
       enfant: 0,
       jeune: 0,
@@ -17,27 +15,20 @@ const FormulaireCriteres = () => {
       senior: 0,
     },
     
->>>>>>> f6d7568 (commit)
   });
 
   
   // État pour stocker la liste des pays récupérés
   const [countries, setCountries] = useState([])
-<<<<<<< HEAD
-
-=======
   const [cities, setCities] = useState([]);
 
 
   
->>>>>>> f6d7568 (commit)
   // Fonction de changement pour mettre à jour les données du formulaire
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-<<<<<<< HEAD
-=======
  
 
   // Fonction pour modifier le nombre de voyageurs par catégorie
@@ -53,7 +44,6 @@ const handleVoyageurChange = (type, increment) => {
 };
 
 
->>>>>>> f6d7568 (commit)
 
   // Fonction de soumission du formulaire
   const handleSubmit = (e) => {
@@ -84,8 +74,6 @@ const handleVoyageurChange = (type, increment) => {
     fetchCountries();
   }, []);
 
-<<<<<<< HEAD
-=======
 
 
 
@@ -119,7 +107,6 @@ const handleVoyageurChange = (type, increment) => {
 
 
 
->>>>>>> f6d7568 (commit)
   return (
     <div
       className="d-flex justify-content-center align-items-center"
@@ -149,18 +136,6 @@ const handleVoyageurChange = (type, increment) => {
 
           <div className="mb-3">
             <label className="form-label">Ville :</label>
-<<<<<<< HEAD
-            <input
-              type="text"
-              className="form-control"
-              name="ville"
-              value={formData.ville}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-=======
             <select className="form-control" name="ville" value={formData.ville} onChange={handleChange} required>
               <option value="">-- Choisissez une ville --</option>
               {cities.length > 0 ? (
@@ -178,7 +153,6 @@ const handleVoyageurChange = (type, increment) => {
           
           
 
->>>>>>> f6d7568 (commit)
           <div className="mb-3">
             <label className="form-label">Date de départ :</label>
             <input
@@ -215,8 +189,6 @@ const handleVoyageurChange = (type, increment) => {
             />
           </div>
 
-<<<<<<< HEAD
-=======
 
 <div className="mb-3">
   <label className="form-label">Voyageurs :</label>
@@ -243,7 +215,6 @@ const handleVoyageurChange = (type, increment) => {
   ))}
 </div>
 
->>>>>>> f6d7568 (commit)
           <button type="submit" className="btn btn-primary w-100">
             Envoyer
           </button>
@@ -253,8 +224,4 @@ const handleVoyageurChange = (type, increment) => {
   );
 };
 
-<<<<<<< HEAD
 export default FormulaireCriteres;
-=======
-export default FormulaireCriteres;
->>>>>>> f6d7568 (commit)
