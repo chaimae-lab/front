@@ -14,8 +14,21 @@ const FormulaireCriteres = () => {
       adulte: 0, // Par défaut, au moins un adulte
       senior: 0,
     },
-    
+    typeVoyage: "",
   });
+
+
+//   liste 
+  const typesVoyage = [
+    { value: "loisir", label: "Loisir" },
+    { value: "affaires", label: "Affaires" },
+    { value: "familial", label: "Familial" },
+    { value: "culturel", label: "Culturel" },
+    { value: "aventure", label: "Aventure" },
+    { value: "romantique", label: "Romantique" },
+    { value: "religieux", label: "Religieux" },
+  ];
+  
 
   
   // État pour stocker la liste des pays récupérés
@@ -214,6 +227,26 @@ const handleVoyageurChange = (type, increment) => {
     </div>
   ))}
 </div>
+
+
+<div className="mb-3">
+  <label className="form-label">Type de voyage :</label>
+  <select
+    className="form-control"
+    name="typeVoyage"
+    value={formData.typeVoyage}
+    onChange={handleChange}
+    required
+  >
+    <option value="">-- Choisissez un type --</option>
+    {typesVoyage.map((type) => (
+      <option key={type.value} value={type.value}>
+        {type.label}
+      </option>
+    ))}
+  </select>
+</div>
+
 
           <button type="submit" className="btn btn-primary w-100">
             Envoyer
