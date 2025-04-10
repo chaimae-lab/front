@@ -112,6 +112,7 @@ const handleVoyageurChange = (type, increment) => {
         setCities([]);
       }
     };
+    
 
     fetchCities();
   }, [formData.pays]);
