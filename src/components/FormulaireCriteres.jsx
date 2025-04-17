@@ -6,6 +6,7 @@ const FormulaireCriteres = () => {
   const [formData, setFormData] = useState({
     pays: [],
     villes: [],
+    adresse: "",
     dateDepart: "",
     dateRetour: "",
     budget: "",
@@ -16,10 +17,12 @@ const FormulaireCriteres = () => {
       senior: 0,
     },
     typeVoyage: "",
+    
   });
 
   const [countries, setCountries] = useState([]);
   const [cities, setCities] = useState([]);
+  const [adresses, setAdresses] = useState([]); 
 // type de voyage 
   const typesVoyage = [
     { value: "loisir", label: "Loisir" },
@@ -75,6 +78,32 @@ const FormulaireCriteres = () => {
   }, [formData.pays]);
 
 
+  //all adresse 
+  useEffect(() => {
+    const fetchAdresses = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/api/adresses/");
+        const data = await response.json();
+  
+        // Map les données pour n'afficher que la rue
+        const formattedAdresses = data.map(adresse => ({
+          value: adresse.id,
+          label: adresse.rue // 👈 ici on affiche que la rue
+        }));
+  
+        setAdresses(formattedAdresses);
+        console.log("✅ Adresses récupérées :", formattedAdresses);
+      } catch (error) {
+        console.error("❌ Erreur lors de la récupération des adresses :", error);
+      }
+    };
+  
+    fetchAdresses();
+  }, []);
+   
+  
+  
+  
   
   // plusieur choix 
 
@@ -91,6 +120,8 @@ const FormulaireCriteres = () => {
     }
   };
 
+
+  //
   const handleSelectChange = (selectedOptions, name) => {
     setFormData((prev) => ({ ...prev, [name]: selectedOptions.map(option => option.value) }));
   };
@@ -140,6 +171,23 @@ const FormulaireCriteres = () => {
             />
           </div>
 
+
+          
+          <div className="mb-3">
+  <label className="form-label">Adresse :</label>
+  <Select
+    name="adresse"
+    options={adresses}
+    onChange={(selectedOption) =>
+      setFormData((prev) => ({ ...prev, adresse: selectedOption?.value || "" }))
+    }
+    value={adresses.find(adresse => adresse.value === formData.adresse) || null}
+  />
+</div>
+
+                                                      
+
+
           <div className="mb-3">
             <label className="form-label">Date de départ :</label>
             <input type="date" className="form-control" name="dateDepart" value={formData.dateDepart} onChange={handleChange} required />
@@ -188,6 +236,9 @@ const FormulaireCriteres = () => {
               ))}
             </select>
           </div>
+
+          
+       
 
           <button type="submit" className="btn btn-primary w-100">
             Valider
