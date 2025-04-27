@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Select from "react-select"; // Importer react-select
+import CurrencyInput from 'react-currency-input-field';
+
 
 const FormulaireCriteres = () => {
   const [formData, setFormData] = useState({
     pays: [],
     villes: [],
     adresse: "",
+    adresseDepart: "",
     dateDepart: "",
     dateRetour: "",
     budget: "",
@@ -23,6 +26,7 @@ const FormulaireCriteres = () => {
   const [countries, setCountries] = useState([]);
   const [cities, setCities] = useState([]);
   const [adresses, setAdresses] = useState([]); 
+  const [budget, setBudget] = useState([]); 
 // type de voyage 
   const typesVoyage = [
     { value: "loisir", label: "Loisir" },
@@ -41,7 +45,7 @@ const FormulaireCriteres = () => {
       try {
         const response = await fetch("http://127.0.0.1:8000/api/pays/");
         const data = await response.json();
-        setCountries(data.map(country => ({ value: country.nom, label: country.nom })));
+        setCountries(data.map(country => ({ id: country.id, value: country.nom, label: country.nom })));
       } catch (error) {
         console.error("Erreur lors de la récupération des pays :", error);
       }
@@ -67,7 +71,7 @@ const FormulaireCriteres = () => {
           console.error("Erreur pour le pays", pays, ":", error);
         }
       }
-      setCities(allCities.map(city => ({ value: city.nom, label: city.nom })));
+      setCities(allCities.map(city => ({ id: city.id, value: city.nom, label: city.nom })));
     };
 
     if (formData.pays.length > 0) {
@@ -101,6 +105,18 @@ const FormulaireCriteres = () => {
     fetchAdresses();
   }, []);
    
+  ////////////  post (critere)
+  const envoyerDonnees = async (payload) => {
+    const response = await fetch("http://127.0.0.1:8000/api/critere-voyages/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+  
+    return response;
+  };
   
   
   
@@ -141,8 +157,36 @@ const FormulaireCriteres = () => {
   //form 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Form Data envoyé:", formData);
+  
+    // On récupère les IDs à partir des objets sélectionnés AJOUTER 
+    const selectedCountryIDs = countries
+      .filter(country => formData.pays.includes(country.value))
+      .map(country => country.id);
+  
+    const selectedCityIDs = cities
+      .filter(city => formData.villes.includes(city.value))
+      .map(city => city.id);
+  
+    const payload = {
+      utilisateur: 1, // ou l'utilisateur connecté si dispo
+      pays_arrivee: selectedCountryIDs,
+      ville_destination: selectedCityIDs,
+      adresse: formData.adresse, // ID de l’adresse
+      adresse_depart: formData.adresseDepart,
+      date_depart: formData.dateDepart,
+      date_retour: formData.dateRetour,
+      budget_total: parseFloat(budget),
+      type_voyage: formData.typeVoyage,
+      voyageurs_enfant: formData.voyageurs.enfant,
+      voyageurs_jeune: formData.voyageurs.jeune,
+      voyageurs_adulte: formData.voyageurs.adulte,
+      voyageurs_senior: formData.voyageurs.senior,
+    };
+  
+    console.log("📦 Payload prêt à être envoyé :", payload);
+    envoyerDonnees(payload);
   };
+  
 
   return (
     <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "100vh" }}>
@@ -185,6 +229,19 @@ const FormulaireCriteres = () => {
   />
 </div>
 
+
+<div className="mb-3">
+  <label className="form-label">Adresse de départ :</label>
+  <input
+    type="text"
+    className="form-control"
+    name="adresseDepart"
+    value={formData.adresseDepart}
+    onChange={handleChange}
+    placeholder="Entrez votre adresse de départ"
+  />
+</div>
+
                                                       
 
 
@@ -199,9 +256,19 @@ const FormulaireCriteres = () => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">Budget :</label>
-            <input type="number" className="form-control" name="budget" value={formData.budget} onChange={handleChange} required />
-          </div>
+      <label className="form-label">Budget:</label>
+      <CurrencyInput
+        id="budget"
+        name="budget"
+        placeholder="budget"
+        value={budget}
+        decimalsLimit={0}
+        onValueChange={(value) => setBudget(value)}
+        intlConfig={{ locale: 'en-US', currency: 'USD' }}
+        className="form-control"
+      />
+    </div>
+
 
           <div className="mb-3">
             <label className="form-label">Voyageurs :</label>
