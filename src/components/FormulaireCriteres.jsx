@@ -121,17 +121,41 @@ const FormulaireCriteres = () => {
       });
   
       const data = await response.json();
-      
+  
       if (!response.ok) {
         console.error("🛑 Erreur du backend :", data);
       } else {
         console.log("✅ Données envoyées avec succès :", data);
+  
+        // Si le backend renvoie l'ID du critère
+        if (data.id) {
+          await getPlanVoyage(data.id);  // Appel API pour récupérer le plan
+        }
       }
     } catch (error) {
       console.error("❌ Erreur réseau :", error);
     }
   };
   
+  
+  //////////////get plan 
+
+  const getPlanVoyage = async (idCritere) => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/generer-plan/${idCritere}/`);
+      const data = await response.json();
+  
+      if (!response.ok) {
+        console.error("Erreur lors de la récupération du plan :", data);
+      } else {
+        console.log(" Plan de voyage récupéré :", data);
+        setPlanVoyage(data);  // mettre à jour l’état pour l’affichage
+        setShowPlan(true);    // afficher la section du plan si besoin
+      }
+    } catch (error) {
+      console.error(" Erreur réseau pour le plan :", error);
+    }
+  };
   
   
   
@@ -333,6 +357,39 @@ const FormulaireCriteres = () => {
             Valider
           </button>
         </form>
+
+
+
+
+{/* 👉 Affichage du plan juste après le formulaire */}
+{showPlan && planVoyage && (
+  <div className="mt-4">
+    <h4>🧳 Plan de Voyage Généré</h4>
+    <p className="text-success">{planVoyage.message}</p>
+
+    {Object.entries(planVoyage.plan).map(([jour, details], index) => (
+      <div key={jour} className="card mb-3">
+        <div className="card-header bg-primary text-white">
+          <strong>Jour {index + 1} - {details.date}</strong>
+        </div>
+        <div className="card-body">
+          {details.activites.map((activite, i) => (
+            <div key={i} className="mb-3">
+              <h5>{activite.nom}</h5>
+              <p><strong>🕒 Heure :</strong> {activite.heure_debut} - {activite.heure_fin}</p>
+              <p><strong>⏱ Durée :</strong> {activite.duree}</p>
+              <p><strong>💰 Budget :</strong> {activite.budget}</p>
+              <hr />
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+)}
+
+
+
       </div>
     </div>
   );
