@@ -5,6 +5,10 @@ import CurrencyInput from 'react-currency-input-field';
 
 
 const FormulaireCriteres = () => {
+
+  const [showPlan, setShowPlan] = useState(false);  // Pour afficher ou non le plan
+  const [planVoyage, setPlanVoyage] = useState(null); // Pour stocker le plan de voyage généré
+  
   const [formData, setFormData] = useState({
     pays: [],
     villes: [],
@@ -90,7 +94,7 @@ const FormulaireCriteres = () => {
         const data = await response.json();
   
         // Map les données pour n'afficher que la rue
-        const formattedAdresses = data.map(adresse => ({
+        const formattedAdresses = data.map(adresse => ({id: adresse.id,
           value: adresse.id,
           label: adresse.rue // 👈 ici on affiche que la rue
         }));
@@ -107,16 +111,27 @@ const FormulaireCriteres = () => {
    
   ////////////  post (critere)
   const envoyerDonnees = async (payload) => {
-    const response = await fetch("http://127.0.0.1:8000/api/critere-voyages/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/criteres/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
   
-    return response;
+      const data = await response.json();
+      
+      if (!response.ok) {
+        console.error("🛑 Erreur du backend :", data);
+      } else {
+        console.log("✅ Données envoyées avec succès :", data);
+      }
+    } catch (error) {
+      console.error("❌ Erreur réseau :", error);
+    }
   };
+  
   
   
   
@@ -167,15 +182,19 @@ const FormulaireCriteres = () => {
       .filter(city => formData.villes.includes(city.value))
       .map(city => city.id);
   
+    const selectedAdresseID = parseInt(formData.adresseDepart);
+
     const payload = {
       utilisateur: 1, // ou l'utilisateur connecté si dispo
       pays_arrivee: selectedCountryIDs,
       ville_destination: selectedCityIDs,
-      adresse: formData.adresse, // ID de l’adresse
-      adresse_depart: formData.adresseDepart,
+      adresse_depart: selectedAdresseID,// ID de l’adresse
+      adresse: formData.adresseDepart, 
       date_depart: formData.dateDepart,
       date_retour: formData.dateRetour,
-      budget_total: parseFloat(budget),
+      //budget_total: parseFloat(budget),
+      budget_total: parseFloat(formData.budget),
+
       type_voyage: formData.typeVoyage,
       voyageurs_enfant: formData.voyageurs.enfant,
       voyageurs_jeune: formData.voyageurs.jeune,
@@ -185,7 +204,12 @@ const FormulaireCriteres = () => {
   
     console.log("📦 Payload prêt à être envoyé :", payload);
     envoyerDonnees(payload);
+    
+    
   };
+
+
+
   
 
   return (
@@ -218,7 +242,7 @@ const FormulaireCriteres = () => {
 
           
           <div className="mb-3">
-  <label className="form-label">Adresse :</label>
+  <label className="form-label">Adresse de depart :</label>
   <Select
     name="adresse"
     options={adresses}
@@ -231,7 +255,7 @@ const FormulaireCriteres = () => {
 
 
 <div className="mb-3">
-  <label className="form-label">Adresse de départ :</label>
+  <label className="form-label">Adresse :</label>
   <input
     type="text"
     className="form-control"
@@ -256,17 +280,15 @@ const FormulaireCriteres = () => {
           </div>
 
           <div className="mb-3">
-      <label className="form-label">Budget:</label>
-      <CurrencyInput
-        id="budget"
-        name="budget"
-        placeholder="budget"
-        value={budget}
-        decimalsLimit={0}
-        onValueChange={(value) => setBudget(value)}
-        intlConfig={{ locale: 'en-US', currency: 'USD' }}
-        className="form-control"
-      />
+          <label className="form-label">Budget :</label>
+          <CurrencyInput
+  className="form-control"
+  name="budget"
+  decimalsLimit={2}
+  value={formData.budget}
+  onValueChange={(value) => setFormData((prev) => ({ ...prev, budget: value }))}
+  prefix="€"
+/>
     </div>
 
 
