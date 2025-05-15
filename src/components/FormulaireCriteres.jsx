@@ -138,11 +138,13 @@ const FormulaireCriteres = () => {
   };
   
   
+
+  
   //////////////get plan 
 
   const getPlanVoyage = async (idCritere) => {
     try {
-      const response = await fetch(`http://localhost:8000/api/generer-plan/${idCritere}/`);
+      const response = await fetch(`http://localhost:8000/api/plan_voyage/${idCritere}/`);
       const data = await response.json();
   
       if (!response.ok) {
@@ -360,35 +362,6 @@ const FormulaireCriteres = () => {
 
 
 
-
-{/* 👉 Affichage du plan juste après le formulaire */}
-{showPlan && planVoyage && (
-  <div className="mt-4">
-    <h4>🧳 Plan de Voyage Généré</h4>
-    <p className="text-success">{planVoyage.message}</p>
-
-    {Object.entries(planVoyage.plan).map(([jour, details], index) => (
-      <div key={jour} className="card mb-3">
-        <div className="card-header bg-primary text-white">
-          <strong>Jour {index + 1} - {details.date}</strong>
-        </div>
-        <div className="card-body">
-          {details.activites.map((activite, i) => (
-            <div key={i} className="mb-3">
-              <h5>{activite.nom}</h5>
-              <p><strong>🕒 Heure :</strong> {activite.heure_debut} - {activite.heure_fin}</p>
-              <p><strong>⏱ Durée :</strong> {activite.duree}</p>
-              <p><strong>💰 Budget :</strong> {activite.budget}</p>
-              <hr />
-            </div>
-          ))}
-        </div>
-      </div>
-    ))}
-  </div>
-)}
-
-<div></div>
 
       </div>
     </div>
