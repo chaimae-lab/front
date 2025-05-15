@@ -142,22 +142,31 @@ const FormulaireCriteres = () => {
   
   //////////////get plan 
 
-  const getPlanVoyage = async (idCritere) => {
-    try {
-      const response = await fetch(`http://localhost:8000/api/plan_voyage/${idCritere}/`);
-      const data = await response.json();
-  
-      if (!response.ok) {
-        console.error("Erreur lors de la récupération du plan :", data);
-      } else {
-        console.log(" Plan de voyage récupéré :", data);
-        setPlanVoyage(data);  // mettre à jour l’état pour l’affichage
-        setShowPlan(true);    // afficher la section du plan si besoin
+ const getPlanVoyage = async (idCritere) => {
+  try {
+    const response = await fetch(`http://localhost:8000/api/plan_voyage/${idCritere}/`);
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Erreur lors de la récupération du plan :", data);
+    } else {
+      let cleaned = data;
+
+      // Si la réponse est une string (et contient des ```), on nettoie
+      if (typeof data === 'string' && data.includes('```')) {
+        cleaned = data.replace(/```json\n?/, '').replace(/```/, '');
+        cleaned = JSON.parse(cleaned);
       }
-    } catch (error) {
-      console.error(" Erreur réseau pour le plan :", error);
+
+      console.log("✅ Plan de voyage nettoyé et parsé :", cleaned);
+      setPlanVoyage(cleaned);
+      setShowPlan(true);
     }
-  };
+  } catch (error) {
+    console.error("❌ Erreur réseau pour le plan :", error);
+  }
+};
+
   
   
   
@@ -359,6 +368,46 @@ const FormulaireCriteres = () => {
             Valider
           </button>
         </form>
+
+
+
+
+
+{showPlan && planVoyage && (
+  <div className="mt-5">
+    <h3 className="mb-4 text-center">🧭 Plan de voyage</h3>
+    {/* Définition des clés triées */}
+    {Object.keys(planVoyage)
+      .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+      .map(jourKey => {
+        const jourData = planVoyage[jourKey];
+        const activites = Array.isArray(jourData.activites) ? jourData.activites : [];
+        return (
+          <div key={jourKey} className="card mb-4 shadow-sm">
+            <div className="card-header bg-primary text-white">
+              <h5 className="mb-0">{jourKey.toUpperCase()} – {jourData.date}</h5>
+            </div>
+            <div className="card-body">
+              {activites.map((act, idx) => (
+                <div key={idx} className="mb-3">
+                  <h6 className="card-title">📌 {act.nom}</h6>
+                  <p className="card-text mb-1">
+                    🕘 {act.heure_debut} – {act.heure_fin} ({act.duree})
+                  </p>
+                  <p className="card-text text-end">💰 {act.budget}</p>
+                  {idx < activites.length - 1 && <hr />}
+                </div>
+              ))}
+              {activites.length === 0 && (
+                <p className="text-muted">Aucune activité pour ce jour.</p>
+              )}
+            </div>
+          </div>
+        );
+      })}
+  </div>
+)}
+
 
 
 
