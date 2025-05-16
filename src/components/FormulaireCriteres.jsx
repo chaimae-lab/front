@@ -369,10 +369,6 @@ const FormulaireCriteres = () => {
           </button>
         </form>
 
-
-
-
-
 {showPlan && planVoyage && (
   <div className="mt-5">
     <h3 className="mb-4 text-center">🧭 Plan de voyage</h3>
@@ -407,6 +403,11 @@ const FormulaireCriteres = () => {
       })}
   </div>
 )}
+
+
+
+
+
 
 
 
