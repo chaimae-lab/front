@@ -386,7 +386,7 @@ const FormulaireCriteres = () => {
             <div className="card-body">
               {activites.map((act, idx) => (
                 <div key={idx} className="mb-3">
-                  <h6 className="card-title">📌 {act.nom}</h6>
+                  <h6 className="card-title"> {act.nom}</h6>
                   <p className="card-text mb-1">
                     🕘 {act.heure_debut} – {act.heure_fin} ({act.duree})
                   </p>
@@ -403,11 +403,6 @@ const FormulaireCriteres = () => {
       })}
   </div>
 )}
-
-
-
-
-
 
 
 
