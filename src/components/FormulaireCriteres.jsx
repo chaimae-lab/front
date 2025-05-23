@@ -12,7 +12,6 @@ const FormulaireCriteres = () => {
   const [formData, setFormData] = useState({
     pays: [],
     villes: [],
-    adresse: "",
     adresseDepart: "",
     dateDepart: "",
     dateRetour: "",
@@ -24,12 +23,12 @@ const FormulaireCriteres = () => {
       senior: 0,
     },
     typeVoyage: "",
+    api_choisie: "deepseek", 
     
   });
 
   const [countries, setCountries] = useState([]);
   const [cities, setCities] = useState([]);
-  const [adresses, setAdresses] = useState([]); 
   const [budget, setBudget] = useState([]); 
 // type de voyage 
   const typesVoyage = [
@@ -41,6 +40,12 @@ const FormulaireCriteres = () => {
     { value: "romantique", label: "Romantique" },
     { value: "religieux", label: "Religieux" },
   ];
+
+//ia 
+const apiOptions = [
+  { value: "deepseek", label: "DeepSeek" },
+  { value: "openai", label: "OpenAI" },
+];
 
 
   // pays 
@@ -86,28 +91,7 @@ const FormulaireCriteres = () => {
   }, [formData.pays]);
 
 
-  //all adresse 
-  useEffect(() => {
-    const fetchAdresses = async () => {
-      try {
-        const response = await fetch("http://127.0.0.1:8000/api/adresses/");
-        const data = await response.json();
-  
-        // Map les données pour n'afficher que la rue
-        const formattedAdresses = data.map(adresse => ({id: adresse.id,
-          value: adresse.id,
-          label: adresse.rue // 👈 ici on affiche que la rue
-        }));
-  
-        setAdresses(formattedAdresses);
-        console.log("✅ Adresses récupérées :", formattedAdresses);
-      } catch (error) {
-        console.error("❌ Erreur lors de la récupération des adresses :", error);
-      }
-    };
-  
-    fetchAdresses();
-  }, []);
+ 
    
   ////////////  post (critere)
   const envoyerDonnees = async (payload) => {
@@ -117,7 +101,8 @@ const FormulaireCriteres = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ ...payload, api_choisie: formData.api_choisie }),
+
       });
   
       const data = await response.json();
@@ -144,28 +129,33 @@ const FormulaireCriteres = () => {
 
  const getPlanVoyage = async (idCritere) => {
   try {
-    const response = await fetch(`http://localhost:8000/api/plan_voyage/${idCritere}/`);
+    const response = await fetch(`http://localhost:8000/api/plan_travel/${idCritere}/`);
     const data = await response.json();
 
-    if (!response.ok) {
-      console.error("Erreur lors de la récupération du plan :", data);
-    } else {
-      let cleaned = data;
+    let cleaned = data;
 
-      // Si la réponse est une string (et contient des ```), on nettoie
-      if (typeof data === 'string' && data.includes('```')) {
-        cleaned = data.replace(/```json\n?/, '').replace(/```/, '');
+    // Si la réponse est une string contenant ``` → nettoyage
+    if (typeof data === 'string') {
+      try {
+        // Nettoyage des balises ```
+        if (data.includes('```')) {
+          cleaned = data.replace(/```json\n?/, '').replace(/```/, '');
+        }
         cleaned = JSON.parse(cleaned);
+      } catch (e) {
+        console.warn("⚠️ Impossible de parser, on garde brut :", data);
+        cleaned = { contenu: data };
       }
-
-      console.log("✅ Plan de voyage nettoyé et parsé :", cleaned);
-      setPlanVoyage(cleaned);
-      setShowPlan(true);
     }
+
+    console.log("✅ Plan de voyage nettoyé :", cleaned);
+    setPlanVoyage(cleaned);
+    setShowPlan(true);
   } catch (error) {
     console.error("❌ Erreur réseau pour le plan :", error);
   }
 };
+
 
   
   
@@ -217,13 +207,12 @@ const FormulaireCriteres = () => {
       .filter(city => formData.villes.includes(city.value))
       .map(city => city.id);
   
-    const selectedAdresseID = parseInt(formData.adresseDepart);
-
+   
     const payload = {
       utilisateur: 1, // ou l'utilisateur connecté si dispo
       pays_arrivee: selectedCountryIDs,
       ville_destination: selectedCityIDs,
-      adresse_depart: selectedAdresseID,// ID de l’adresse
+      
       adresse: formData.adresseDepart, 
       date_depart: formData.dateDepart,
       date_retour: formData.dateRetour,
@@ -275,18 +264,7 @@ const FormulaireCriteres = () => {
           </div>
 
 
-          
-          <div className="mb-3">
-  <label className="form-label">Adresse de depart :</label>
-  <Select
-    name="adresse"
-    options={adresses}
-    onChange={(selectedOption) =>
-      setFormData((prev) => ({ ...prev, adresse: selectedOption?.value || "" }))
-    }
-    value={adresses.find(adresse => adresse.value === formData.adresse) || null}
-  />
-</div>
+         
 
 
 <div className="mb-3">
@@ -361,7 +339,15 @@ const FormulaireCriteres = () => {
             </select>
           </div>
 
-          
+          <div className="mb-3">
+  <label>Choix de l'API :</label>
+  <Select
+    options={apiOptions}
+    value={apiOptions.find(opt => opt.value === formData.api_choisie)}
+    onChange={option => setFormData(prev => ({ ...prev, api_choisie: option.value }))}
+  />
+</div>
+
        
 
           <button type="submit" className="btn btn-primary w-100">
