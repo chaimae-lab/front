@@ -6,7 +6,6 @@ import CurrencyInput from 'react-currency-input-field';
 
 const FormulaireCriteres = () => {
 
-  const [showPlan, setShowPlan] = useState(false);  // Pour afficher ou non le plan
   const [planVoyage, setPlanVoyage] = useState(null); // Pour stocker le plan de voyage généré
   
   const [formData, setFormData] = useState({
