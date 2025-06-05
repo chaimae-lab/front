@@ -377,7 +377,16 @@ const apiOptions = [
   />
 </div>
 
-       
+       <label className="form-label">Pays :</label>
+<Select
+  isMulti
+  name="pays"
+  options={countries}
+  onChange={(selectedOptions) => handleSelectChange(selectedOptions, "pays")}
+  className={`form-control ${erreurs.adresseDepart ? 'input-error' : ''}`}
+  value={countries.filter(country => formData.pays.includes(country.value))}
+/>
+
 
           <button type="submit" className="btn btn-primary w-100">
             Valider
