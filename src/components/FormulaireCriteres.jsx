@@ -6,30 +6,35 @@ import CurrencyInput from 'react-currency-input-field';
 
 const FormulaireCriteres = () => {
 
+  const initialFormData = {
+  pays: [],
+  villes: [],
+  adresseDepart: "",
+  dateDepart: "",
+  dateRetour: "",
+  budget: 0,
+  voyageurs: {
+    enfant: 0,
+    jeune: 0,
+    adulte: 1,
+    senior: 0,
+  },
+  typeVoyage: "",
+  api_choisie: "deepseek",
+};
+
+
   const [showPlan, setShowPlan] = useState(false);  // Pour afficher ou non le plan
   const [planVoyage, setPlanVoyage] = useState(null); // Pour stocker le plan de voyage généré
   
-  const [formData, setFormData] = useState({
-    pays: [],
-    villes: [],
-    adresseDepart: "",
-    dateDepart: "",
-    dateRetour: "",
-    budget: "",
-    voyageurs: {
-      enfant: 0,
-      jeune: 0,
-      adulte: 1,
-      senior: 0,
-    },
-    typeVoyage: "",
-    api_choisie: "deepseek", 
-    
-  });
+  const [formData, setFormData] = useState(initialFormData);
+
 
   const [countries, setCountries] = useState([]);
   const [cities, setCities] = useState([]);
   const [budget, setBudget] = useState([]); 
+  const [erreurs, setErreurs] = useState({});
+
 // type de voyage 
   const typesVoyage = [
     { value: "loisir", label: "Loisir" },
@@ -197,7 +202,25 @@ const apiOptions = [
   //form 
   const handleSubmit = (e) => {
     e.preventDefault();
-  
+    
+    
+    
+  const nouvellesErreurs = {};
+
+   if (formData.pays.length === 0) nouvellesErreurs.pays = true;
+   if (formData.villes.length === 0) nouvellesErreurs.villes = true;
+   if (!formData.adresseDepart.trim()) nouvellesErreurs.adresseDepart = true;
+   if (!formData.dateDepart) nouvellesErreurs.dateDepart = true;
+   if (!formData.dateRetour) nouvellesErreurs.dateRetour = true;
+   if (!formData.budget) nouvellesErreurs.budget = true;
+   if (!formData.typeVoyage) nouvellesErreurs.typeVoyage = true;
+
+   if (Object.keys(nouvellesErreurs).length > 0) {
+    setErreurs(nouvellesErreurs);
+    return;
+  }
+
+  setErreurs({}); 
     // On récupère les IDs à partir des objets sélectionnés AJOUTER 
     const selectedCountryIDs = countries
       .filter(country => formData.pays.includes(country.value))
@@ -230,6 +253,7 @@ const apiOptions = [
     envoyerDonnees(payload);
     
     
+    setFormData(initialFormData);
   };
 
 
@@ -247,9 +271,13 @@ const apiOptions = [
               isMulti
               name="pays"
               options={countries}
-              onChange={(selectedOptions) => handleSelectChange(selectedOptions, "pays")}
+              onChange={(selectedOptions) => handleSelectChange(selectedOptions, "pays") }
+              className={`form-control ${erreurs.pays ? 'input-error' : ''}`}
+
+              
               value={countries.filter(country => formData.pays.includes(country.value))}
             />
+            
           </div>
 
           <div className="mb-3">
@@ -276,6 +304,7 @@ const apiOptions = [
     value={formData.adresseDepart}
     onChange={handleChange}
     placeholder="Entrez votre adresse de départ"
+    required
   />
 </div>
 
