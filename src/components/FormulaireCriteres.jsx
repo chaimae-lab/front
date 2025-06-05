@@ -6,19 +6,30 @@ import CurrencyInput from 'react-currency-input-field';
 
 const FormulaireCriteres = () => {
 
-
-
-
   const [showPlan, setShowPlan] = useState(false);  // Pour afficher ou non le plan
   const [planVoyage, setPlanVoyage] = useState(null); // Pour stocker le plan de voyage généré
   
-
+  const [formData, setFormData] = useState({
+    pays: [],
+    villes: [],
+    adresseDepart: "",
+    dateDepart: "",
+    dateRetour: "",
+    budget: "",
+    voyageurs: {
+      enfant: 0,
+      jeune: 0,
+      adulte: 1,
+      senior: 0,
+    },
+    typeVoyage: "",
+    api_choisie: "deepseek", 
+    
+  });
 
   const [countries, setCountries] = useState([]);
   const [cities, setCities] = useState([]);
   const [budget, setBudget] = useState([]); 
-  const [erreurs, setErreurs] = useState({});
-
 // type de voyage 
   const typesVoyage = [
     { value: "loisir", label: "Loisir" },
@@ -186,9 +197,7 @@ const apiOptions = [
   //form 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    
-    
+  
     // On récupère les IDs à partir des objets sélectionnés AJOUTER 
     const selectedCountryIDs = countries
       .filter(country => formData.pays.includes(country.value))
@@ -221,7 +230,6 @@ const apiOptions = [
     envoyerDonnees(payload);
     
     
-    
   };
 
 
@@ -239,13 +247,9 @@ const apiOptions = [
               isMulti
               name="pays"
               options={countries}
-              onChange={(selectedOptions) => handleSelectChange(selectedOptions, "pays") }
-              className={`form-control ${erreurs.pays ? 'input-error' : ''}`}
-
-              
+              onChange={(selectedOptions) => handleSelectChange(selectedOptions, "pays")}
               value={countries.filter(country => formData.pays.includes(country.value))}
             />
-            
           </div>
 
           <div className="mb-3">
@@ -272,7 +276,6 @@ const apiOptions = [
     value={formData.adresseDepart}
     onChange={handleChange}
     placeholder="Entrez votre adresse de départ"
-    required
   />
 </div>
 
