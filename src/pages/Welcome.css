@@ -1,0 +1,40 @@
+.welcome-page {
+  background-image: url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e"); /* image voyage */
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  position: relative;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.overlay {
+  background-color: rgba(0, 0, 0, 0.5); /* effet foncé pour le texte */
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.content {
+  color: white;
+  max-width: 600px;
+  padding: 20px;
+}
+
+.icon i {
+  font-size: 80px;
+  color: #fff;
+}
+
+.title {
+  font-size: 2.8rem;
+}
+
+.title span {
+  color: #ffc107;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+}
