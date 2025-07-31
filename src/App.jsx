@@ -8,6 +8,7 @@ import Api from "./pages/Api";
 import VoyageurProfil from "./voyageur/VoyageurProfil"
 import GoogleCallback from "./pages/GoogleCallback";
 import ListeVoyageurs from "./voyageur/ListeVoyageurs";
+import VoyageurUpdate from "./voyageur/VoyageurUpdate";
 
 function App() {
   return (
@@ -23,6 +24,11 @@ function App() {
         <Route path="/api" element={<Api />} />
         <Route path="/profil" element={<VoyageurProfil />} />
         <Route path="/liste" element={<ListeVoyageurs />} />
+        <Route path="/update/:id" element={<VoyageurUpdate />} />
+
+
+
+
       </Routes>
     </BrowserRouter>
   );

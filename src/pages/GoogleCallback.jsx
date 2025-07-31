@@ -11,7 +11,7 @@ const GoogleCallback = () => {
 
     if (code) {
       axios
-        .post("http://localhost:8000/api/google-login/", { code })  // <-- ici l'URL de ton API
+        .post("http://localhost:8000/api/google-login/", { code })  
         .then((res) => {
           localStorage.setItem("access_token", res.data.access_token);
           localStorage.setItem("refresh_token", res.data.refresh_token);
