@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom"; // ⬅️ IMPORT
+import axiosInstance from "../axiosInstance"; // ✅ utilise ton axiosInstance
+import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const ListeVoyageurs = () => {
   const [voyageurs, setVoyageurs] = useState([]);
-  const navigate = useNavigate(); // ⬅️ HOOK
+  const navigate = useNavigate();
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8000/api/voyageurs/")
+    axiosInstance
+      .get("mes-voyageurs/") // ✅ nouvelle route API
       .then((response) => setVoyageurs(response.data))
       .catch((error) =>
         console.error("Erreur lors du chargement des voyageurs :", error)
@@ -17,40 +17,36 @@ const ListeVoyageurs = () => {
   }, []);
 
   const handleAjouter = () => {
-    navigate("/profil"); // ⬅️ REDIRECTION VERS /profil
+    navigate("/profil");
   };
 
-
   const handleModifier = (id) => {
-  const selectedVoyageur = voyageurs.find(v => v.id === id);
-  navigate(`/update/${id}`, { state: { voyageur: selectedVoyageur } });
-};
-  //const handleModifier = (id) => {
-  //  alert(`Modifier le voyageur ID: ${id}`);
- // };
-
-  //const handleModifier = (id) => {
-// navigate(`/update/${id}`); // 👈 redirection vers /update/:id
-//};
+    const selectedVoyageur = voyageurs.find((v) => v.id === id);
+    navigate(`/update/${id}`, { state: { voyageur: selectedVoyageur } });
+  };
 
   const handleSupprimer = async (id) => {
-  if (window.confirm("Es-tu sûr de vouloir supprimer ce voyageur ?")) {
-    try {
-      await axios.delete(`http://localhost:8000/api/voyageurs/${id}/`);
-      alert("Voyageur supprimé avec succès !");
-      // Mettre à jour la liste localement
-      setVoyageurs(voyageurs.filter((v) => v.id !== id));
-    } catch (error) {
-      console.error("Erreur lors de la suppression :", error);
-      alert("Erreur lors de la suppression du voyageur.");
+    if (window.confirm("Es-tu sûr de vouloir supprimer ce voyageur ?")) {
+      try {
+        await axiosInstance.delete(`voyageurs/${id}/`); // ✅ token ajouté automatiquement
+        alert("Voyageur supprimé avec succès !");
+        setVoyageurs(voyageurs.filter((v) => v.id !== id));
+      } catch (error) {
+        console.error("Erreur lors de la suppression :", error);
+        alert("Erreur lors de la suppression du voyageur.");
+      }
     }
-  }
-};
-
+  };
 
   return (
-    <div className="container py-5" style={{ backgroundColor: "#f4f7fa", minHeight: "100vh" }}>
-      <div className="card shadow-lg border-0 rounded-4 mx-auto" style={{ maxWidth: "1000px" }}>
+    <div
+      className="container py-5"
+      style={{ backgroundColor: "#f4f7fa", minHeight: "100vh" }}
+    >
+      <div
+        className="card shadow-lg border-0 rounded-4 mx-auto"
+        style={{ maxWidth: "1000px" }}
+      >
         <div className="card-body">
           <div className="d-flex justify-content-between align-items-center mb-4">
             <h3 className="text-primary fw-bold">Liste des Voyageurs</h3>
@@ -85,7 +81,7 @@ const ListeVoyageurs = () => {
                           title="Modifier"
                           onClick={() => handleModifier(voyageur.id)}
                           style={{ fontSize: "1.2rem", cursor: "pointer" }}
-                        >   
+                        >
                           ✏️
                         </span>
                         <span
@@ -95,7 +91,7 @@ const ListeVoyageurs = () => {
                           onClick={() => handleSupprimer(voyageur.id)}
                           style={{ fontSize: "1.2rem", cursor: "pointer" }}
                         >
-                          🗑️ 
+                          🗑️
                         </span>
                       </td>
                     </tr>

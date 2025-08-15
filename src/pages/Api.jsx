@@ -11,21 +11,21 @@ const Google = () => {
         token: credential,
       });
       
-      localStorage.setItem("access_token", res.data.access_token);
-      localStorage.setItem("refresh_token", res.data.refresh_token);
+      localStorage.setItem("access_token", res.data.access);
+      localStorage.setItem("refresh_token", res.data.refresh);
 
     /////
     localStorage.setItem("user", JSON.stringify(res.data.user));
 
     // ✅ afficher dans la console
     console.log("✅ Connexion réussie !");
-    console.log("🔐 Access Token:", res.data.access_token);
-    console.log("♻️ Refresh Token:", res.data.refresh_token);
+    console.log("🔐 Access Token:", res.data.access);
+    console.log("♻️ Refresh Token:", res.data.refresh);
     console.log("👤 Utilisateur:", res.data.user);
 
 
       // Rediriger vers formulaire
-      window.location.href = "/formulaire";
+      window.location.href = "/liste";
     } catch (error) {
       console.error("Erreur lors de la connexion avec Google:", error);
     }
